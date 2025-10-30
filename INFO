@@ -1,0 +1,11 @@
+ "type": "amadeusOAuth2Token",
+ "username": "manuelsdesk0029@gmail.com",
+"application_name": "Manuels",
+"client_id": "GAOW0lNFnIfJaSYd6GbAKduUjiijgRwS",
+"token_type": "Bearer",
+"access_token": "DWeTmEMQ8IPv2HzhqbMwEy9yIHJx",
+API_KEY = "GAOW0lNFnIfJaSYd6GbAKduUjiijgRwS"
+API_SECRET = "NHd4QYFS4ALuhek7"
+"expires_in": 1799,
+"state": "approved",
+"scope": ""
