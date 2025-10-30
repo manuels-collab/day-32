@@ -1,12 +1,21 @@
 import os
-from twilio.rest import Client
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
 # Using a .env file to retrieve the phone numbers and tokens.
 
 class NotificationManager:
 
     def __init__(self):
-        self.client = Client(os.environ['TWILIO_SID'], os.environ["TWILIO_AUTH_TOKEN"])
+        self.username = "mycompanyprince@gmail.com"
+        self.receiver = "manuelsdesk0029@gmail.com"
+        self.subject = "Flight Messages"
+        self.password = "'oyfxsxzcudajllxf'"
+        self.message = MIMEMultipart()
+
+
+
 
     def send_sms(self, message_body):
         """
@@ -30,13 +39,18 @@ class NotificationManager:
         Twilio account credentials prior to using this function when the Notification Manager gets
         initialized.
         """
-        message = self.client.messages.create(
-            from_=os.environ["TWILIO_VIRTUAL_NUMBER"],
-            body=message_body,
-            to=os.environ["TWILIO_VIRTUAL_NUMBER"]
-        )
-        # Prints if successfully sent.
-        print(message.sid)
+
+        self.message["To"] = self.receiver
+        self.message['From'] = self.username
+        self.message['Subject'] = self.subject
+
+        self.message.attach(MIMEText(message_body, "plain"))
+        with smtplib.SMTP("smtp.gmail.com", 587) as server:
+            server.starttls()
+            server.login(self.username, self.password)
+            server.send_message(self.message)
+
+        print('EMAIL SENT SUCCESSFULLY')
 
     # Is SMS not working for you or prefer whatsapp? Connect to the WhatsApp Sandbox!
     # https://console.twilio.com/us1/develop/sms/try-it-out/whatsapp-learn

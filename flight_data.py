@@ -1,7 +1,7 @@
 
 class FlightData:
 
-    def __init__(self, price, origin_airport, destination_airport, out_date, return_date):
+    def __init__(self, price, origin_airport, destination_airport, out_date, return_date, stops):
         """
         Constructor for initializing a new flight data instance with specific travel details.
 
@@ -17,6 +17,7 @@ class FlightData:
         self.destination_airport = destination_airport
         self.out_date = out_date
         self.return_date = return_date
+        self.stops = stops
 
 def find_cheapest_flight(data):
     """
@@ -40,13 +41,15 @@ def find_cheapest_flight(data):
     # Handle empty data if no flight or Amadeus rate limit exceeded
     if data is None or not data['data']:
         print("No flight data")
-        return FlightData("N/A", "N/A", "N/A", "N/A", "N/A")
+        return FlightData("N/A", "N/A", "N/A", "N/A", "N/A", "N/A")
 
     # Data from the first flight in the json
     first_flight = data['data'][0]
+    # A flight with 2 segments will have 1 stop
+    nr_stops = len(first_flight["itineraries"][0]["segments"]) - 1
     lowest_price = float(first_flight["price"]["grandTotal"])
     origin = first_flight["itineraries"][0]["segments"][0]["departure"]["iataCode"]
-    destination = first_flight["itineraries"][0]["segments"][0]["arrival"]["iataCode"]
+    destination = first_flight["itineraries"][0]["segments"][nr_stops]["arrival"]["iataCode"]
     out_date = first_flight["itineraries"][0]["segments"][0]["departure"]["at"].split("T")[0]
     return_date = first_flight["itineraries"][1]["segments"][0]["departure"]["at"].split("T")[0]
 

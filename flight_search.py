@@ -1,10 +1,8 @@
 import requests
 from datetime import datetime
-import os
-from dotenv import load_dotenv
 
 # Load environment variables from .env file
-load_dotenv()
+
 
 IATA_ENDPOINT = "https://test.api.amadeus.com/v1/reference-data/locations/cities"
 FLIGHT_ENDPOINT = "https://test.api.amadeus.com/v2/shopping/flight-offers"
@@ -25,8 +23,8 @@ class FlightSearch:
         _api_secret (str): The API secret for authenticating with Amadeus, sourced from the .env file.
         _token (str): The authentication token obtained by calling the _get_new_token method.
         """
-        self._api_key = os.environ["AMADEUS_API_KEY"]
-        self._api_secret = os.environ["AMADEUS_SECRET"]
+        self._api_key = "GAOW0lNFnIfJaSYd6GbAKduUjiijgRwS"
+        self._api_secret = "NHd4QYFS4ALuhek7"
         # Getting a new token every time program is run. Could reuse unexpired tokens as an extension.
         self._token = self._get_new_token()
 
@@ -104,7 +102,7 @@ class FlightSearch:
 
         return code
 
-    def check_flights(self, origin_city_code, destination_city_code, from_time, to_time):
+    def check_flights(self, origin_city_code, destination_city_code, from_time, to_time, is_direct=True):
         """
         Searches for flight options between two cities on specified departure and return dates
         using the Amadeus API.
