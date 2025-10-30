@@ -1,53 +1,65 @@
- ##################### Extra Hard Starting Project ######################
-import pandas
-import datetime as dt
-from random import *
+import requests
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-# 1. Update the birthdays.csv
-#Reading the data
+from datetime import datetime
+import time
 
-# 2. Check if today matches a birthday in the birthdays.csv
-data = pandas.read_csv('birthdays.csv')
-now = dt.datetime.now()
-year = now.year
-month = now.month
-day = now.day
-current_date = f'{year} {month} {day}'
-data_dict = data.to_dict(orient='records')
-for item in data_dict:
-    if month == item['month'] and day == item['day']:
+MY_LAT =  5.172110# Your latitude
+MY_LONG = 7.999480 # Your longitude
 
-# 3. If step 2 is true, pick a random letter from letter templates and replace the [NAME] with the person's actual name from birthdays.csv
-        birthday_letters = choice(['./letter_templates/letter_1.txt', './letter_templates/letter_2.txt', './letter_templates/letter_3.txt'])
+response = requests.get(url="http://api.open-notify.org/iss-now.json")
+response.raise_for_status()
+iss_data = response.json()
 
-        with open(birthday_letters, 'r') as file:
-            file_content = f'{file.read()}'
+iss_latitude = 7.172110 #float(data["iss_position"]["latitude"])
+iss_longitude = 3.4444#float(data["iss_position"]["longitude"])
 
-        new_file = file_content.replace('[NAME]', item['name'])
-# 4. Send the letter generated in step 3 to that person's email address.
-    #LETTER BODY
-        sender_email = 'mycompanyprince@gmail.com'
-        receiver_email = 'manuelsdesk0029@gmail.com'
-        password = 'oyfxsxzcudajllxf'
-    #LETTER CONTENT
-        subject = 'HAPPY BIRTHDAY'
-        body = new_file
+#Your position is within +5 or -5 degrees of the ISS position.
+def set_current_position(lat, long):
+    global iss_latitude, iss_longitude
+    if lat-5 <= iss_latitude <= lat + 5 or long-5 <= iss_longitude <= long+5:
+            print(iss_latitude)
+            print(iss_longitude)
+
+parameters = {
+    "lat": MY_LAT,
+    "lng": MY_LONG,
+    "formatted": 0,
+}
+
+response = requests.get("https://api.sunrise-sunset.org/json", params=parameters)
+response.raise_for_status()
+data = response.json()
+sunrise = 17#int(data["results"]["sunrise"].split("T")[1].split(":")[0])
+sunset = 7#int(data["results"]["sunset"].split("T")[1].split(":")[0])
+time_now = datetime.now()
 
 
-        messages = MIMEMultipart()
-        messages['From'] = sender_email
-        messages['To'] = receiver_email
-        messages['Subject'] = subject
+#If the ISS is close to my current position
+# and it is currently dark
+if time_now.hour >= sunset or time_now.hour <= sunrise:
+    set_current_position(MY_LAT, MY_LONG)
+# Then email me to tell me to look up.
+    #Create an email
+    while True:
+        my_email = "My email"
+        password = "My Password"
+        subject = "ISS in the sky"
+        body = "Look up in the sky, the ISS IS PASSING"
 
-        messages.attach(MIMEText(body, "plain"))
+        message = MIMEMultipart()
+        message['From'] = my_email
+        message['To'] = my_email
+        message['Subject'] = subject
 
-        with smtplib.SMTP('smtp.gmail.com', 587) as server:
+        message.attach(MIMEText(body, 'plain'))
+        with smtplib.SMTP("smtp.gmail.com", 587) as server:
             server.starttls()
-            server.login(sender_email, password)
-            server.send_message(messages)
-print("Messages sent sucessfully")
+            server.login(my_email, password)
+            server.send_message(message)
+        print("Messages sent successfully")
+# BONUS: run the code every 60 seconds.
 
 
 

@@ -1,26 +1,22 @@
-import smtplib
-from email.mime.multipart import  MIMEMultipart
-from email.mime.text import MIMEText
+import requests
+from datetime import datetime
+MY_LAT = 5.181740
+MY_LNG = 7.715100
 
-#EMAIL CONFIG
-sender_email = 'mycompanyprince@gmail.com'
-receiver_email = 'manuelsdesk0029@gmail.com'
-password = 'oyfxsxzcudajllxf'
+parameters = {
+    "lat": MY_LAT,
+    "lng": MY_LNG,
+    "formatted": 0,
+}
 
-#Create the email content
-subject = 'Test Mail'
-body = "Hello, this is a another birthday wish from python!"
+response = requests.get('https://api.sunrise-sunset.org/json', params=parameters)
+response.raise_for_status()
+data = response.json()
+sunrise = data['results']['sunrise'].split("T")[1].split(":")[0]
+sunset = data['results']['sunset'].split("T")[1].split(":")[0]
 
-message = MIMEMultipart()
-message['From'] = sender_email
-message['To'] = receiver_email
-message['Subject'] = subject
+print(sunrise)
+print(sunset)
+time_now = datetime.now()
 
-message.attach(MIMEText(body, "plain"))
-
-with smtplib.SMTP("smtp.gmail.com", 587) as server:
-    server.starttls()
-    server.login(sender_email, password)
-    server.send_message(message)
-
-print('EMAIL SENT SUCCESSFULLY')
+print(time_now.hour)
